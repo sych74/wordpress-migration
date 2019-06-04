@@ -1,0 +1,27 @@
+jpsType: update
+name: WordPress Data Migration
+logo: https://raw.githubusercontent.com/jelastic-jps/magento/master/addons/migration/images/magento-migration.png
+homepage: https://github.com/jelastic-jps/magento/tree/master/addons/migration
+description:
+  short: Migrate data from a standalone WordPress installation to the Auto-Scalable
+    Wordpress Cluster by Jelastic.
+success: Your Wordpress data was successfully migrated to Jelastic. Check the import
+  details within the <b>migration.log</b> file on the Admin Node.
+settings:
+  fields:
+    - name: magento-database
+      caption: Database
+      type: string
+      default: ''
+      required: true
+    - name: magento-data
+      caption: Content
+      type: string
+      default: ''
+      required: true
+onInstall:
+- cmd[admin]:
+  - rm -rf /tmp/magento-data; mkdir /tmp/magento-data; wget -qO- '${settings.magento-data}' | tar xz -C /tmp/magento-data
+  - rm -rf /tmp/magento-database; mkdir /tmp/magento-database; wget -qO- '${settings.magento-database}' | tar xz -C /tmp/magento-database
+  - wget https://raw.githubusercontent.com/jelastic-jps/magento/master/addons/migration/migrationMG.sh -O /tmp/migrationMG.sh
+  - bash /tmp/migrationMG.sh &>> /var/log/migration.log
